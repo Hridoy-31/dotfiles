@@ -56,13 +56,31 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages '(doom-modeline ivy command-log-mode use-package)))
+ '(custom-safe-themes
+   '("e3daa8f18440301f3e54f2093fe15f4fe951986a8628e98dcd781efbec7a46f2" default))
+ '(package-selected-packages
+   '(doom-themes helpful counsel ivy-rich which-key rainbow-delimiters doom-modeline ivy command-log-mode use-package))
+ '(warning-suppress-log-types '((use-package) (use-package)))
+ '(warning-suppress-types '((use-package))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+; Enable column number
+(column-number-mode)
+
+; Enable global line number
+(global-display-line-numbers-mode t)
+
+; Disable line numbers for the following modes
+(dolist (mode '(org-mode-hook
+		term-mode-hook
+		shell-mode-hook
+		eshell-mode-hook))
+  (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 ; Describe command side by side after executing
 ; M-x clm/toggle-command-log-buffer
@@ -95,3 +113,42 @@
   :ensure t
   :init (doom-modeline-mode 1)
   :custom ((doom-modeline-height 15)))
+
+; Doom themes
+(use-package doom-themes
+  :init (load-theme 'doom-gruvbox))
+
+; Rainbow delimiters for colorful parenthesis
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
+
+; Showing available keybindings
+(use-package which-key
+  :init (which-key-mode)
+  :diminish which-key-mode
+  :config
+  (setq which-key-idle-delay 0.3))
+
+; Additional informations of auto-completion commands
+(use-package ivy-rich
+  :init
+  (ivy-rich-mode 1))
+
+; Using Counsel package for more helpful descriptions of the available auto-completion commands
+(use-package counsel
+  :bind (("M-x" . counsel-M-x)
+	 ("C-x b" . counsel-ibuffer)
+	 ("C-x C-f" . counsel-find-file)
+	 :map minibuffer-local-map
+	 ("C-r" . 'counsel-minibuffer-history)))
+
+; Using Helpful package for better descriptions of functions and variables
+(use-package helpful
+  :custom
+  (counsel-describe-function-function #'helpful-callable)
+  (counsel-describe-variable-function #'helpful-variable)
+  :bind
+  ([remap describe-function] . counsel-describe-function)
+  ([remap describe-command] . helpful-command)
+  ([remap describe-variable] . counsel-describe-variable)
+  ([remap describe-key] . helpful-key))
