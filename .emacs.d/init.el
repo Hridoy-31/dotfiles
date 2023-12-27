@@ -59,7 +59,7 @@
  '(custom-safe-themes
    '("e3daa8f18440301f3e54f2093fe15f4fe951986a8628e98dcd781efbec7a46f2" default))
  '(package-selected-packages
-   '(hydra evil-collection evil general all-the-icons doom-themes helpful counsel ivy-rich which-key rainbow-delimiters doom-modeline ivy command-log-mode use-package))
+   '(evil-magit magit counsel-projectile projectile hydra evil-collection evil general all-the-icons doom-themes helpful counsel ivy-rich which-key rainbow-delimiters doom-modeline ivy command-log-mode use-package))
  '(warning-suppress-log-types '((use-package) (use-package)))
  '(warning-suppress-types '((comp) (use-package))))
 (custom-set-faces
@@ -224,3 +224,33 @@
 (rune/leader-keys
   ; "Ctrl-Space-t-s" for text scaling using the hydra
   "ts" '(hydra-text-scale/body :which-key "scale text"))
+
+; Using "Projectile" package for managing and interacting with project directories
+(use-package projectile
+  :diminish projectile-mode
+  ; Enabling projectile mode
+  :config (projectile-mode)
+  ; Using ivy completion as the completion command for the projectile package
+  :custom ((projectile-completion-system 'ivy))
+  :bind-keymap
+  ("C-c p" . projectile-command-map)
+  :init
+  ; Maintaing projectile package into the "~/Projects" directory always.
+  (when (file-directory-p "~/Projects")
+    (setq projectile-project-search-path '("~/Projects")))
+  ; When switch project, always show the new project's directories and files as a list
+  (setq projectile-switch-project-action #'projectile-dired))
+
+; Extending "projectile" package by combining it with "counsel" for better completion and
+; and interactive search
+(use-package counsel-projectile
+  :config (counsel-projectile-mode))
+
+; "magit" is a git interface in emacs
+(use-package magit
+  :custom
+  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+
+; Using "magit" with "evil" keybindings
+(use-package evil-magit
+  :after magit)
