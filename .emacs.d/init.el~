@@ -59,7 +59,7 @@
  '(custom-safe-themes
    '("e3daa8f18440301f3e54f2093fe15f4fe951986a8628e98dcd781efbec7a46f2" default))
  '(package-selected-packages
-   '(magit counsel-projectile projectile hydra evil-collection evil general all-the-icons doom-themes helpful counsel ivy-rich which-key rainbow-delimiters doom-modeline ivy command-log-mode use-package))
+   '(org-bullets evil-magit magit counsel-projectile projectile hydra evil-collection evil general all-the-icons doom-themes helpful counsel ivy-rich which-key rainbow-delimiters doom-modeline ivy command-log-mode use-package))
  '(warning-suppress-log-types '((use-package) (use-package)))
  '(warning-suppress-types '((comp) (use-package))))
 (custom-set-faces
@@ -254,3 +254,66 @@
 ; Using "magit" with "evil" keybindings
 (use-package evil-magit
   :after magit)
+
+; Org mode and it's customization
+(defun org-mode-setup ()
+  ; Activating the indentation inside of org mode
+  (org-indent-mode)
+  ; Activating variable font sizes proportional to the buffer. It will help in readability 
+  ; But it will keep the headings and other hierarchical elements at fixed pitch.
+  (variable-pitch-mode 1)
+  ; Activates visual line mode, which will give soft wrapping of long lines. It will show
+  ; long lines in separate lines (virtual) without having any real line breaking character within them.
+  (visual-line-mode 1))
+
+(defun org-font-setup ()
+  ; Replacing list hyphens with dots like this (•)
+  (font-lock-add-keywords 'org-mode
+			  '(("^ *\\([-]\\) "
+			     (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+
+  ; Setting fonts and sizes for different heading levels
+  (dolist (face '((org-level-1 . 1.2)
+		  (org-level-2 . 1.1)
+		  (org-level-3 . 1.05)
+		  (org-level-4 . 1.0)
+		  (org-level-5 . 1.1)
+		  (org-level-6 . 1.1)
+		  (org-level-7 . 1.1)
+		  (org-level-8 . 1.1)))
+    (set-face-attribute (car face) nil :font "Cantarell" :weight 'regular :height (cdr face)))
+
+  ; Specific org modes will have fixed pitch fonts
+  (set-face-attribute 'org-block nil :foreground nil :inherit 'fixed-pitch)
+  (set-face-attribute 'org-code nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-table nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-verbatim nil :inherit '(shadow fixed-pitch))
+  (set-face-attribute 'org-special-keyword nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-meta-line nil :inherit '(font-lock-comment-face fixed-pitch))
+  (set-face-attribute 'org-checkbox nil :inherit 'fixed-pitch))
+
+(use-package org
+  ; org-mode-setup function will be activated whenever org mode is activated 
+  :hook (org-mode . org-mode-setup)
+  :config
+  (setq org-ellipsis " ▾")
+  (org-font-setup))
+
+; Customizing the bullet points in the org mode.
+(use-package org-bullets
+  :after org
+  ; org-bullets mode will activate whenever org mode will activate
+  :hook (org-mode . org-bullets-mode)
+  :custom
+  (org-bullets-bullet-list '("◉" "○" "●" "○" "●" "○" "●")))
+
+; Wrap and center text in the org mode buffers
+(defun org-mode-visual-fill ()
+  ; Set the column width as long as it will contain 100 characters
+  (setq visual-fill-column-width 100
+	; Center the text within the width
+	visual-fill-column-center-text t)
+  (visual-fill-column-mode 1))
+
+(use-package visual-fill-column
+  :hook (org-mode . org-mode-visual-fill))
