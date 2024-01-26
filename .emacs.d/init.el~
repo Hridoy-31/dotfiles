@@ -59,7 +59,7 @@
  '(custom-safe-themes
    '("e3daa8f18440301f3e54f2093fe15f4fe951986a8628e98dcd781efbec7a46f2" default))
  '(package-selected-packages
-   '(org-bullets evil-magit magit counsel-projectile projectile hydra evil-collection evil general all-the-icons doom-themes helpful counsel ivy-rich which-key rainbow-delimiters doom-modeline ivy command-log-mode use-package))
+   '(visual-fill-column org-bullets evil-magit magit counsel-projectile projectile hydra evil-collection evil general all-the-icons doom-themes helpful counsel ivy-rich which-key rainbow-delimiters doom-modeline ivy command-log-mode use-package))
  '(warning-suppress-log-types '((use-package) (use-package)))
  '(warning-suppress-types '((comp) (use-package))))
 (custom-set-faces
@@ -110,7 +110,7 @@
 
 ; Install additional icons for the modeline
 ; For the very first time after installing all-the-icons package
-; run the command: M-x all-the-icons-install-fonts
+; run the command: M-x all-the-icons-install-fonts and M-x nerd-icons-install-fonts
 (use-package all-the-icons)
 
 ; Modeline
@@ -317,3 +317,28 @@
 
 (use-package visual-fill-column
   :hook (org-mode . org-mode-visual-fill))
+
+; Setting up to write and show code snippets inside Org buffer 
+(require 'org-tempo)
+
+; Press "<sh" and TAB to create a shell snippet
+(add-to-list 'org-structure-template-alist '("sh" . "src shell"))
+; Press "<el" and TAB to create a emacs lisp snippet
+(add-to-list 'org-structure-template-alist '("el" . "src emacs-lisp"))
+; Press "<py" and TAB to create a python snippet
+(add-to-list 'org-structure-template-alist '("py" . "src python"))
+
+; Syntax highlighting for .conf files in Org buffer
+(push '("conf-unix" . conf-unix) org-src-lang-modes)
+
+; Using lsp (Language Server Protocol) for code completion and syntax highlighting
+(use-package lsp-mode
+  ; lsp-deferred is used for running lsp on the background if the buffer is changed to another
+  :commands (lsp lsp-deferred)
+  :hook (lsp-mode . lsp-mode-setup)
+  :init
+  ; Initialize the following command before starting lsp-mode
+  ; Pressing "C-c l" will invoke for the LSP related commands
+  (setq lsp-keymap-prefix "C-c l")
+  :config
+  (lsp-enable-which-key-integration t))
