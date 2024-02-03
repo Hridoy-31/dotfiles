@@ -5,7 +5,7 @@
 (scroll-bar-mode -1)
 
 ; Disable the toolbar
-(tool-bar-mode -1)
+(tool-bar-mode 1)
 
 ; Disable tooltips
 (tooltip-mode -1)
@@ -59,7 +59,7 @@
  '(custom-safe-themes
    '("e3daa8f18440301f3e54f2093fe15f4fe951986a8628e98dcd781efbec7a46f2" default))
  '(package-selected-packages
-   '(visual-fill-column org-bullets evil-magit magit counsel-projectile projectile hydra evil-collection evil general all-the-icons doom-themes helpful counsel ivy-rich which-key rainbow-delimiters doom-modeline ivy command-log-mode use-package))
+   '(ccls lsp-ivy lsp-treemacs lsp-ui company-box company lsp-mode visual-fill-column org-bullets evil-magit magit counsel-projectile projectile hydra evil-collection evil general all-the-icons doom-themes helpful counsel ivy-rich which-key rainbow-delimiters doom-modeline ivy command-log-mode use-package))
  '(warning-suppress-log-types '((use-package) (use-package)))
  '(warning-suppress-types '((comp) (use-package))))
 (custom-set-faces
@@ -331,6 +331,11 @@
 ; Syntax highlighting for .conf files in Org buffer
 (push '("conf-unix" . conf-unix) org-src-lang-modes)
 
+; Showing file hierarchy in the top of the buffer and which function or class is currently activated.
+(defun lsp-mode-setup ()
+  (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
+  (lsp-headerline-breadcrumb-mode))
+
 ; Using lsp (Language Server Protocol) for code completion and syntax highlighting
 (use-package lsp-mode
   ; lsp-deferred is used for running lsp on the background if the buffer is changed to another
@@ -342,3 +347,46 @@
   (setq lsp-keymap-prefix "C-c l")
   :config
   (lsp-enable-which-key-integration t))
+
+; User Inteface for Language Server Protocol 
+(use-package lsp-ui
+  :hook (lsp-mode . lsp-ui-mode)
+  :custom
+  (lsp-ui-doc-position 'bottom))
+
+; File explorer with Language Server Protocol features
+(use-package lsp-treemacs
+  :after lsp)
+
+; For incremental auto-completion
+(use-package lsp-ivy)
+
+; C Language Server
+(use-package ccls
+  :after lsp-mode
+  :config
+  (setq ccls-executable "/usr/bin/ccls"))
+
+; Auto-completion in code
+(use-package company
+  :after lsp-mode
+  :hook (lsp-mode . company-mode)
+  ; Setting up "TAB" to insert the highlighted completion
+  :bind (:map company-active-map
+	      ("<tab>" . company-complete-selection))
+  ; Setting up "TAB" for indent or autocompletion
+  (:map lsp-mode-map
+	("<tab>" . company-indent-or-complete-common))
+  :custom
+  ; Autocompletion menu will appear after inserting only 1 character
+  (company-minimum-prefix-length 1)
+  ; Autocompletion will appear as soon as typing characters
+  (company-ide-delay 0.0))
+
+; Suggesting auto-completion in a box in code
+(use-package company-box
+  :hook (company-mode . company-box-mode))
+
+; For commenting and uncommenting lines or regions of texts
+(use-package evil-nerd-commenter
+  :bind ("M-/" . evilnc-comment-or-uncomment-lines))
