@@ -59,7 +59,7 @@
  '(custom-safe-themes
    '("e3daa8f18440301f3e54f2093fe15f4fe951986a8628e98dcd781efbec7a46f2" default))
  '(package-selected-packages
-   '(eterm-256color evil-nerd-commenter ccls lsp-ivy lsp-treemacs lsp-ui company-box company lsp-mode visual-fill-column org-bullets evil-magit magit counsel-projectile projectile hydra evil-collection evil general all-the-icons doom-themes helpful counsel ivy-rich which-key rainbow-delimiters doom-modeline ivy command-log-mode use-package))
+   '(dired-open all-the-icons-dired dired-single eshell-git-prompt eterm-256color evil-nerd-commenter ccls lsp-ivy lsp-treemacs lsp-ui company-box company lsp-mode visual-fill-column org-bullets evil-magit magit counsel-projectile projectile hydra evil-collection evil general all-the-icons doom-themes helpful counsel ivy-rich which-key rainbow-delimiters doom-modeline ivy command-log-mode use-package))
  '(warning-suppress-log-types '((use-package) (use-package)))
  '(warning-suppress-types '((comp) (use-package))))
 (custom-set-faces
@@ -442,4 +442,43 @@
     (setq eshell-visual-commands '("htop" "zsh" "vim")))
 
   (eshell-git-prompt-use-theme 'powerline))
+
+; Dired customization (Built-in file manager in Emacs)
+(use-package dired
+  ; Stop checking if it is installed or not. (It is built-in in Emacs from the beginning)
+  :ensure nil
+  :commands (dired dired-jump)
+  ; "Ctrl-x Ctrl-j" to open dired and the current file will be highlighted
+  :bind (("C-x C-j" . dired-jump))
+  ; Showing hidden files and directories will be listed first
+  :custom ((dired-listing-switches "-agho --group-directories-first"))
+  :config
+  (evil-collection-define-key 'normal 'dired-mode-map
+    ; "h" for moving up one directory in dired
+    "h" 'dired-single-up-directory
+    ; "l" for opening the current file in a separate buffer
+    "l" 'dired-single-buffer))
+
+; Opening files in a single buffer rather than opening each files in separate new buffers
+(use-package dired-single)
+
+; Enhancing the visual appearance of the dired buffer
+(use-package all-the-icons-dired
+  :hook (dired-mode . all-the-icons-dired-mode))
+
+; Opening file with pre-defined programs within dired
+(use-package dired-open
+  :config
+  (setq dired-open-extensions '(("png" . "feh")
+				("mkv" . "mpv"))))
+
+; Hiding the dotfiles in dired buffer
+(use-package dired-hide-dotfiles
+  :hook (dired-mode . dired-hide-dotfiles-mode)
+  :config
+  ; Pressing "H" in NORMAL mode will toggle dotfiles hide/show in dired buffer
+  (evil-collection-define-key 'normal 'dired-mode-map
+    "H" 'dired-hide-dotfiles-mode))
+
+
 
