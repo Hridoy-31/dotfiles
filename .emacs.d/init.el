@@ -59,7 +59,7 @@
  '(custom-safe-themes
    '("e3daa8f18440301f3e54f2093fe15f4fe951986a8628e98dcd781efbec7a46f2" default))
  '(package-selected-packages
-   '(dired-hide-dotfiles dired-open all-the-icons-dired dired-single eshell-git-prompt eterm-256color evil-nerd-commenter ccls lsp-ivy lsp-treemacs lsp-ui company-box company lsp-mode visual-fill-column org-bullets evil-magit magit counsel-projectile projectile hydra evil-collection evil general all-the-icons doom-themes helpful counsel ivy-rich which-key rainbow-delimiters doom-modeline ivy command-log-mode use-package))
+   '(auto-package-update dired-hide-dotfiles dired-open all-the-icons-dired dired-single eshell-git-prompt eterm-256color evil-nerd-commenter ccls lsp-ivy lsp-treemacs lsp-ui company-box company lsp-mode visual-fill-column org-bullets evil-magit magit counsel-projectile projectile hydra evil-collection evil general all-the-icons doom-themes helpful counsel ivy-rich which-key rainbow-delimiters doom-modeline ivy command-log-mode use-package))
  '(warning-suppress-log-types '((use-package) (use-package)))
  '(warning-suppress-types '((comp) (use-package))))
 (custom-set-faces
@@ -479,6 +479,20 @@
   ; Pressing "H" in NORMAL mode will toggle dotfiles hide/show in dired buffer
   (evil-collection-define-key 'normal 'dired-mode-map
     "H" 'dired-hide-dotfiles-mode))
+
+; Automatic updates for installed packages
+(use-package auto-package-update
+  :custom
+  ; Updates will be checked every 7 days
+  (auto-package-update-interval 7)
+  ; Prompting before updating packages
+  (auto-package-update-prompt-before-update t)
+  ; Hides the updated results after performing the update
+  (auto-package-update-hide-results t)
+  :config
+  (auto-package-update-maybe)
+  ; Scheduling automatic updates at 9:00 AM
+  (auto-package-update-at-time "09:00"))
 
 
 
