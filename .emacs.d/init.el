@@ -1,4 +1,7 @@
-; Suppress the startup message
+; When Emacs allocates more than 50 megabytes of memory, garbage collection will be triggered to reclaim unused memory
+(setq gc-cons-threshold (* 50 1000 1000))
+
+;;Suppress the startup message
 (setq inhibit-startup-message t)
 
 ; Disable visible scrollbar
@@ -494,5 +497,15 @@
   ; Scheduling automatic updates at 9:00 AM
   (auto-package-update-at-time "09:00"))
 
+; Displaying Emacs startup time
+(defun display-startup-time ()
+  (message "Emacs loaded in %s with %d garbage collections."
+	   (format "%.2f seconds"
+		   (float-time
+		    (time-subtract after-init-time before-init-time)))
+	   gcs-done))
 
+(add-hook 'emacs-startup-hook #'display-startup-time)
 
+; When Emacs allocates more than 2 Megabytes of memory, Garbage Collector will be triggered
+(setq gc-cons-threshold (* 2 1000 1000))
