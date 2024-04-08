@@ -62,7 +62,7 @@
  '(custom-safe-themes
    '("e3daa8f18440301f3e54f2093fe15f4fe951986a8628e98dcd781efbec7a46f2" default))
  '(package-selected-packages
-   '(auto-package-update dired-hide-dotfiles dired-open all-the-icons-dired dired-single eshell-git-prompt eterm-256color evil-nerd-commenter ccls lsp-ivy lsp-treemacs lsp-ui company-box company lsp-mode visual-fill-column org-bullets evil-magit magit counsel-projectile projectile hydra evil-collection evil general all-the-icons doom-themes helpful counsel ivy-rich which-key rainbow-delimiters doom-modeline ivy command-log-mode use-package))
+   '(flycheck auto-package-update dired-hide-dotfiles dired-open all-the-icons-dired dired-single eshell-git-prompt eterm-256color evil-nerd-commenter ccls lsp-ivy lsp-treemacs lsp-ui company-box company lsp-mode visual-fill-column org-bullets evil-magit magit counsel-projectile projectile hydra evil-collection evil general all-the-icons doom-themes helpful counsel ivy-rich which-key rainbow-delimiters doom-modeline ivy command-log-mode use-package))
  '(warning-suppress-log-types '((use-package) (use-package)))
  '(warning-suppress-types '((comp) (use-package))))
 (custom-set-faces
@@ -509,3 +509,17 @@
 
 ; When Emacs allocates more than 2 Megabytes of memory, Garbage Collector will be triggered
 (setq gc-cons-threshold (* 2 1000 1000))
+
+; Setting up auto closing parenthesis
+(electric-pair-mode 1)
+
+; Setting up the default indentation to 4 spaces
+(setq-default c-basic-offset 4)
+
+; Installing Flycheck for syntax checking on the fly
+(unless (package-installed-p 'flycheck)
+  (package-refresh-contents)
+  (package-install 'flycheck))
+
+; Activating flycheck globally
+(global-flycheck-mode)

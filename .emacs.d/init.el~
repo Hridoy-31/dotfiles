@@ -507,5 +507,19 @@
 
 (add-hook 'emacs-startup-hook #'display-startup-time)
 
+; When Emacs allocates more than 2 Megabytes of memory, Garbage Collector will be triggered
+(setq gc-cons-threshold (* 2 1000 1000))
 
+; Setting up auto closing parenthesis
+(electric-pair-mode 1)
 
+; Setting up the default indentation to 4 spaces
+(setq-default c-basic-offset 4)
+
+; Installing Flycheck for syntax checking on the fly
+(unless (package-installed-p 'flycheck)
+  (package-refresh-contents)
+  (package-install 'flycheck))
+
+; Activating flycheck globally
+(global-flycheck-mode)
